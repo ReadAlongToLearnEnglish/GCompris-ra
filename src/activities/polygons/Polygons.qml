@@ -57,8 +57,7 @@ ActivityBase {
             // Pen and color properties
             readonly property color gridColor: "#b3b3b3"
             readonly property color polygonColor: "#10721d"
-            readonly property color dotColor: "#5020a8dd"
-            readonly property color lastDotColor: "#50dda820"
+            readonly property color dotColor: "#20a8dd"
             // View properties
             readonly property int mainSize: Math.min(layoutArea.width, layoutArea.height)
             readonly property int gridStep: mainSize / 10
@@ -70,6 +69,11 @@ ActivityBase {
             property alias sceneGrid: sceneGrid
             property alias canvasContainer: canvasContainer
             property bool isClosed: false
+
+            // For keyboard controls
+            property bool keyboardControls: false
+            property int selectedPoint: -1
+            property alias keyboardCursor: keyboardCursor
         }
 
         onStart: { Activity.start(items) }
@@ -79,8 +83,46 @@ ActivityBase {
         Keys.forwardTo: [tutorialInstruction]
 
         Keys.onPressed: (event) => {
-            if((event.key === Qt.Key_Return || event.key === Qt.Key_Enter) && okButton.enabled) {
-                Activity.checkAnswer()
+            if(items.buttonsBlocked) {
+                return;
+            }
+            if(event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                if(okButton.enabled) {
+                    Activity.checkAnswer();
+                    return;
+                } else if(items.keyboardControls) {
+                    Activity.keyboardCreatePoint();
+                    return;
+                }
+            }
+            if(!items.keyboardControls) {
+                items.keyboardControls = true;
+                return;
+            }
+            switch(event.key) {
+                case Qt.Key_Left:
+                    Activity.moveCursorLeft();
+                    break;
+                case Qt.Key_Right:
+                    Activity.moveCursorRight();
+                    break;
+                case Qt.Key_Up:
+                    Activity.moveCursorUp();
+                    break;
+                case Qt.Key_Down:
+                    Activity.moveCursorDown();
+                    break;
+                case Qt.Key_Space:
+                    Activity.selectPoint();
+                    break;
+                case Qt.Key_Tab:
+                    Activity.selectNextPoint();
+                    break
+                case Qt.Key_Delete:
+                    if(items.selectedPoint != -1) {
+                       Activity.deletePoint(items.selectedPoint);
+                       items.selectedPoint = -1;
+                    }
             }
         }
 
@@ -200,12 +242,13 @@ ActivityBase {
 
                     onClicked: (mouse) => {
                         mouse.accepted = true;
-                        var point = {
-                            "x": Math.round(mouse.x / items.gridStep),
-                            "y": Math.round(mouse.y / items.gridStep)
+                        if(items.keyboardControls) {
+                            Activity.resetKeyboardControls();
                         }
-                        points.append(point);
-                        sceneGrid.requestPaint();
+                        var pointX = Math.round(mouse.x / items.gridStep);
+                        var pointY = Math.round(mouse.y / items.gridStep);
+                        Activity.createPoint(pointX, pointY);
+                        Activity.moveCursorToPoint(pointX, pointY);
                     }
                 }
             }
@@ -215,8 +258,10 @@ ActivityBase {
                 model: points
                 delegate: Rectangle {
                     id: pointItem
-                    color: (index === points.count - 1 && !items.isClosed) ?
-                        items.lastDotColor : items.dotColor
+                    color:  isLastPoint ? "transparent" : items.dotColor
+                    border.width: isLastPoint ? width * 0.25 : 0
+                    border.color: GCStyle.selectedDarkBlue
+                    opacity: isLastPoint ? 0.5 : 0.3
                     width: items.gridStep
                     height: items.gridStep
                     radius: width
@@ -226,6 +271,7 @@ ActivityBase {
 
                     readonly property real centerX: x + items.dotOffset
                     readonly property real centerY: y + items.dotOffset
+                    readonly property bool isLastPoint: (index === points.count - 1 && !items.isClosed)
 
                     MouseArea {
                         anchors.fill: parent
@@ -238,21 +284,23 @@ ActivityBase {
 
                         onClicked: (mouse)=> {
                             mouse.accepted = true;
+                            if(items.keyboardControls) {
+                                Activity.resetKeyboardControls();
+                            }
+                            Activity.moveCursorToPoint(model.x, model.y);
                             // simple click on first or last point closes the shape if at least 3 points already placed
                             if(!items.isClosed && points.count > 2 &&
                                 (index === 0 || index === points.count - 1)) {
-                                var point = {
-                                    "x": points.get(0).x,
-                                    "y": points.get(0).y
-                                };
-                                points.append(point);
-                                sceneGrid.requestPaint();
-                                items.isClosed = true;
+                                Activity.closeShape();
                             }
                         }
 
                         onDoubleClicked: (mouse)=> {
                             mouse.accepted = true;
+                            if(items.keyboardControls) {
+                                Activity.resetKeyboardControls();
+                            }
+                            Activity.moveCursorToPoint(model.x, model.y);
                             // logic must be done outside the item, else it breaks as soon as the point is deleted.
                             Activity.deletePoint(index);
                         }
@@ -261,26 +309,15 @@ ActivityBase {
                             const newPointX = Math.round(pointItem.centerX / items.gridStep);
                             const newPointY = Math.round(pointItem.centerY / items.gridStep);
 
-                            var hasChanged = false;
-                            if(newPointX != model.x) {
-                                points.setProperty(index, "x", newPointX);
-                                hasChanged = true;
-                            }
-                            if(newPointY != model.y) {
-                                points.setProperty(index, "y", newPointY);
-                                hasChanged = true;
-                            }
-                            if(hasChanged) {
-                                // move first point too if needed
-                                if(items.isClosed && index === points.count - 1) {
-                                    points.setProperty(0, "x", newPointX);
-                                    points.setProperty(0, "y", newPointY);
-                                }
-                                sceneGrid.requestPaint();
+                            if(newPointX != model.x || newPointY != model.y) {
+                                Activity.movePoint(index, newPointX, newPointY);
                             }
                         }
 
                         onPressed: {
+                            if(items.keyboardControls) {
+                                Activity.resetKeyboardControls();
+                            }
                             // break the binding while dragging
                             pointItem.x = pointItem.x;
                             pointItem.y = pointItem.y;
@@ -290,8 +327,36 @@ ActivityBase {
                             // restore the binding after dragging
                             pointItem.x = Qt.binding(function() { return (model.x - 0.5) * items.gridStep });
                             pointItem.y = Qt.binding(function() { return (model.y - 0.5) * items.gridStep });
+                            Activity.moveCursorToPoint(model.x, model.y);
                         }
                     }
+                }
+            }
+
+            Rectangle {
+                id: keyboardCursor
+                width: items.gridStep
+                height: items.gridStep
+                radius: width
+                color: "transparent"
+                border.color: GCStyle.selectedDarkBlue
+                border.width: GCStyle.midBorder
+                x: (xPosition - 0.5) * items.gridStep
+                y: (yPosition - 0.5) * items.gridStep
+                visible: items.keyboardControls
+
+                property int xPosition: 0
+                property int yPosition: 0
+
+                Rectangle {
+                    id: selectedPointCursor
+                    width: parent.width * 0.5
+                    height: width
+                    radius: width
+                    color: GCStyle.selectedDarkBlue
+                    visible: items.selectedPoint != -1
+                    x: (parent.width - width) * 0.5
+                    y: x
                 }
             }
         }
