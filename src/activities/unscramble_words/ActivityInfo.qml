@@ -31,6 +31,5 @@ ActivityInfo {
     manual: qsTr("You are provided with some letters. Drag and drop them to the upper area to form a meaningful word.")
     section: "reading words"
     createdInVersion: 20000
-    levels: ["1", "2"]
-
+    levels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" ]
 }
