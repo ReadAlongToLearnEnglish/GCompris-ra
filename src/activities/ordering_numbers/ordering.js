@@ -172,6 +172,7 @@ function checkOrder() {
     for(var i = 0 ; i < items.targetListModel.count; i++) {
         if(items.targetListModel.get(i).elementValue != values[i]) {
             success = false
+    
             items.targetListModel.get(i).borderColor = "#D94444" //red
         }
         else
@@ -180,10 +181,15 @@ function checkOrder() {
 
     items.targetPlaceholder.colorResetRequired = true
 
-    if(success)
-        items.bonus.good("lion")
-    else
-        items.bonus.bad("lion")
+    // GCompris-ra 26.10.1 Remove success/failure popup
+
+
+
+
+    //if(success)
+    //    items.bonus.good("lion")
+    //else
+    //    items.bonus.bad("lion")
 }
 
 function moveFromTargetList(from_, to_, n_) {

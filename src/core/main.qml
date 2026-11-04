@@ -415,6 +415,29 @@ Window {
                     ApplicationSettings.lastGCVersionRan = ApplicationInfo.GCVersionCode;
                 }
             }
+
+
+            // gcompris-ra 26.10.1 As part of the GPL licence i need to insert a notice advising of the fork.
+            var RADialog;
+            RADialog = Core.showMessageDialog(
+                        pageView,
+                        qsTr("GCompris-ra v26.10.1. This is the RA2LE fork of GCompris,") + ("<br>")
+                        + qsTr("This fork isnt endorsed by the gcompris-qt development team.") + "\n"
+                        + "\n"
+                        + qsTr("The source code for this project can be found at https://github.com/ReadAlongToLearnEnglish/gcompris-ra ")
+                        + ("<br><br>")
+                        + qsTr("If you would like to support my work, i have a Patreon account at https://www.patreon.com/c/ReadAlongTOLearnEnglish_Aus ")
+                        + ("<br><br>")
+                        + qsTr("In this current release, my additions are a tiny fraction of hte total source code and I'm thankful to stand on the shoulders of giants.")
+                        + ("<br><br>"),
+                        "", null,
+                        "", null,
+                        function() {
+                        }
+                       );
+
+
+
             //Store version on first run in any case
             if(ApplicationSettings.lastGCVersionRan === 0)
                 ApplicationSettings.lastGCVersionRan = ApplicationInfo.GCVersionCode;
