@@ -31,7 +31,12 @@ other commands below will be needed, including commands belfore the large one an
 after, such as the external dependency.
 
 Below is the official release HACKING file
-====================
+NOTE: This version of software is GCompris-ra 26.10.1 below is the HACKING
+file from the main fork 
+Source for gcompris-ra can be downloaded at
+
+https://github.com/ReadAlongToLearnEnglish/GCompris-ra
+
 GCompris HACKING
 
 Official repository
