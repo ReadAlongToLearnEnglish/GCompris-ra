@@ -13,7 +13,7 @@ Commmand to download the gcompris-ra version
 git clone  https://github.com/ReadAlongToLearnEnglish/GCompris-ra.git
 
 this command is to download an branch 
-git clone -b Gcompris-ra-26.10.1  https://github.com/ReadAlongToLearnEnglish/GCompris-ra.git
+git clone -b Gcompris-ra-26.11.2  https://github.com/ReadAlongToLearnEnglish/GCompris-ra.git
 
 
 Below has some commands to install extra files , they didnt work exactly i got it to work with this
