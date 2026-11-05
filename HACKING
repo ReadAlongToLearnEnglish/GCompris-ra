@@ -1,3 +1,13 @@
+====
+Notes specific to version26.11.2
+
+A goal for this release was to confirm the installation instructions of this file, but 
+im currently on a machine with dependencies installed, so will be only confirming 
+download and build commands of this file
+
+
+
+====
 
 Commmand to download the gcompris-ra version
 git clone  https://github.com/ReadAlongToLearnEnglish/GCompris-ra.git
