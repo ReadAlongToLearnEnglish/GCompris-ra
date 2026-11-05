@@ -1,9 +1,35 @@
+====
+Notes specific to version26.11.2
+
+A goal for this release was to confirm the installation instructions of this file, but 
+im currently on a machine with dependencies installed, so will be only confirming 
+download and build commands of this file
+
+Specific install commands for Gcompris-ra v26.11.2 (once dependencies installed) should work.
+
+git clone -b Gcompris-ra-26.11.2  https://github.com/ReadAlongToLearnEnglish/GCompris-ra.git
+
+cd GCompirs-ra
+git clone https://github.com/qml-box2d/qml-box2d.git external/qml-box2d/
+
+mkdir build
+cd build
+cmake ..
+make
+./bin/gcompris-qt
+
+
+
+====
+
+
+====
 
 Commmand to download the gcompris-ra version
 git clone  https://github.com/ReadAlongToLearnEnglish/GCompris-ra.git
 
 this command is to download an branch 
-git clone -b Gcompris-ra-26.10.1  https://github.com/ReadAlongToLearnEnglish/GCompris-ra.git
+git clone -b Gcompris-ra-26.11.2  https://github.com/ReadAlongToLearnEnglish/GCompris-ra.git
 
 
 Below has some commands to install extra files , they didnt work exactly i got it to work with this
