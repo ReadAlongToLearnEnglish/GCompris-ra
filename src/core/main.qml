@@ -426,9 +426,9 @@ Window {
                         + "\n"
                         + qsTr("The source code for this project can be found at https://github.com/ReadAlongToLearnEnglish/gcompris-ra ")
                         + ("<br><br>")
-                        + qsTr("If you would like to support my work, i have a Patreon account at https://www.patreon.com/c/ReadAlongTOLearnEnglish_Aus ")
+                        + qsTr("If you would like to support my work, i have a Patreon account at https://www.patreon.com/c/ReadAlongToLearnEnglish_Aus ")
                         + ("<br><br>")
-                        + qsTr("In this current release, my additions are a tiny fraction of hte total source code and I'm thankful to stand on the shoulders of giants.")
+                        + qsTr("In this current release, my additions are a tiny fraction of the total source code and I'm thankful to stand on the shoulders of giants.")
                         + ("<br><br>"),
                         "", null,
                         "", null,
